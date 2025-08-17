@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <title>شبكة المقررات – BSCM</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- مكتبة Select2 للبحث -->
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <style>
+    body{margin:0;background:#f5f6fa;font-family:"Segoe UI",Arial,sans-serif;color:#222;line-height:1.6}
+    header{padding:16px;border-bottom:2px solid #d0d4db;background:#fff;position:sticky;top:0;z-index:10}
+    header h1{margin:0;font-size:22px;color:#2c3e50}
+    header .sub{color:#666;font-size:13px}
+    .wrap{max-width:1200px;margin:0 auto;padding:20px}
+    .filters{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;margin-bottom:18px}
+    .card{background:#fff;border:1px solid #ddd;border-radius:10px;padding:14px}
+    select,input,button{background:#fff;color:#222;border:1px solid #bbb;border-radius:6px;padding:8px 10px;font-size:14px;width:100%}
+    button{cursor:pointer;background:#3498db;color:#fff;border:none}
+    .grid{display:grid;grid-template-columns:2fr 1fr;gap:14px}
+    .table{width:100%;border-collapse:collapse}
+    .table th,.table td{border-bottom:1px solid #e2e5ea;padding:8px;vertical-align:top}
+    .table th{background:#f0f2f5;font-weight:600;color:#333;position:sticky;top:80px}
+    .badge{display:inline-block;background:#e8f5e9;color:#2e7d32;border:1px solid #c8e6c9;border-radius:6px;padding:3px 8px;font-size:12px;margin:2px}
+    .pill{display:inline-block;background:#eef2ff;color:#3949ab;border:1px solid #c5cae9;border-radius:6px;padding:2px 6px;font-size:12px;margin:2px}
+    .title{font-weight:700;margin-bottom:6px;color:#2c3e50}
+    .kpi{display:flex;gap:10px;flex-wrap:wrap}
+    .kpi .box{background:#fafafa;border:1px solid #ddd;border-radius:8px;padding:10px;min-width:100px;text-align:center}
+    .box .n{font-size:18px;font-weight:700;color:#34495e}
+    .muted{color:#777}
+    footer{margin-top:40px;padding:20px;text-align:center;color:#666;font-size:13px;border-top:1px solid #ddd;background:#fafafa}
+    a{color:#1565c0;text-decoration:none}
+    a:hover{text-decoration:underline}
+    @media (max-width:1000px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>شبكة المقررات – إدارة الأعمال (BSCM)</h1>
+    <div class="sub">استخدم القوائم والروابط للتصفية والبحث</div>
+  </header>
+
+  <div class="wrap">
+    <!-- فلاتر -->
+    <div class="filters">
+      <div class="card" style="grid-column: span 12;">
+        <div style="display:flex;flex-wrap:wrap;gap:12px">
+          <div style="flex:2;min-width:220px">
+            <label class="muted">المادة</label>
+            <select id="courseSelect"></select>
+          </div>
+          <div style="flex:1;min-width:180px">
+            <label class="muted">الاختصاص</label>
+            <select id="specSelect">
+              <option value="all">الكل</option>
+              <option value="مشتركة">مشتركة</option>
+              <option value="مالية">مالية</option>
+              <option value="موارد بشرية">موارد بشرية</option>
+              <option value="تسويق">تسويق</option>
+            </select>
+          </div>
+          <div style="flex:1;min-width:170px">
+            <label class="muted"> الحد الأدنى للساعات</label>
+            <input id="minHours" type="number" min="0" step="1" placeholder="0">
+          </div>
+          
+            <label for="needsPre" class="muted">مواد لها متطلبات فقط</label>
+		<div style="flex:1;min-width:100px;display:flex;align-items:center;gap:100px">
+            <input id="needsPre" type="checkbox" />
+          </div>
+          <div style="flex:1;min-width:160px">
+            <button id="resetBtn">إعادة ضبط</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- تفاصيل -->
+    <div class="grid">
+      <div class="card">
+        <div class="title">تفاصيل المادة</div>
+        <div id="details" class="muted">اختر مادة...</div>
+        <div id="kpis" class="kpi" style="margin-top:10px"></div>
+        <div id="rels" style="margin-top:10px"></div>
+      </div>
+      <div class="card">
+        <div class="title">إحصاءات</div>
+        <div class="kpi" style="margin-top:8px">
+          <div class="box"><div class="muted">إجمالي</div><div class="n" id="totalCount">–</div></div>
+          <div class="box"><div class="muted">مشتركة</div><div class="n" id="commonCount">–</div></div>
+          <div class="box"><div class="muted">مالية</div><div class="n" id="finCount">–</div></div>
+          <div class="box"><div class="muted">موارد بشرية</div><div class="n" id="hrCount">–</div></div>
+          <div class="box"><div class="muted">تسويق</div><div class="n" id="mktCount">–</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- جدول -->
+    <div class="card" style="margin-top:14px">
+      <div class="title">جدول المقررات</div>
+      <table class="table" id="tbl">
+        <thead>
+          <tr>
+            <th>رمز</th><th>اسم</th><th>ساعات</th><th>متطلبات</th><th>اختصاص</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <footer>
+    Designed By: BSCM Support Channel - B.Karkinly<br>
+    Channel: <a href="https://t.me/karkinlysupportchannel" target="_blank">https://t.me/karkinlysupportchannel</a><br>
+    Telegram Channel BOT: @SVU_BSCM_BOT
+  </footer>
+
+<script>
+/* ======== البيانات (مقتبسة من الملف) ======== */
+const COURSES = [
+  {code:'GBS301', name:'التعليم الإلكتروني', hours:4, prereq:[], spec:['مشتركة']},
+  {code:'GBS302', name:'مهارات الحاسوب', hours:4, prereq:[], spec:['مشتركة']},
+  {code:'GBS303', name:'تحضير السيرة المهنية', hours:2, prereq:[], spec:['مشتركة']},
+  {code:'GMA401', name:'الرياضيات', hours:5, prereq:[], spec:['مشتركة']},
+  {code:'GMA402', name:'الإحصاء والاحتمالات', hours:5, prereq:[], spec:['مشتركة']},
+  {code:'GMA403', name:'الرياضيات الاقتصادية', hours:5, prereq:['GMA401','GMA402'], spec:['مشتركة']},
+  {code:'BAC401', name:'مبادئ المحاسبة 1', hours:5, prereq:[], spec:['مشتركة']},
+  {code:'BAC402', name:'مبادئ المحاسبة 2', hours:5, prereq:['BAC401'], spec:['مشتركة']},
+  {code:'GBL401', name:'قانون الأعمال', hours:4, prereq:[], spec:['مشتركة']},
+  {code:'GBS504', name:'تطبيقات حاسوبية في الإدارة', hours:5, prereq:['GMA401','GMA402','GBS302'], spec:['مشتركة']},
+  {code:'BMN401', name:'أساسيات الإدارة', hours:4, prereq:[], spec:['مشتركة']},
+  {code:'BEC401', name:'تاريخ الفكر الاقتصادي', hours:5, prereq:[], spec:['مشتركة']},
+  {code:'BMK401', name:'مدخل إلى التسويق', hours:5, prereq:['BMN401'], spec:['مشتركة']},
+  {code:'BEC402', name:'الاقتصاد الجزئي', hours:5, prereq:['GMA401','BEC401'], spec:['مشتركة']},
+  {code:'BHR401', name:'إدارة الموارد البشرية', hours:5, prereq:['BMN401'], spec:['مشتركة']},
+  {code:'BEC403', name:'الاقتصاد الكلي', hours:5, prereq:['BEC402'], spec:['مشتركة']},
+  {code:'BMK502', name:'سلوك المستهلك', hours:5, prereq:['BMK401'], spec:['مشتركة']},
+  {code:'BQM501', name:'إدارة العمليات', hours:5, prereq:['GMA403','BMN401'], spec:['مشتركة']},
+  {code:'BHR502', name:'السلوك التنظيمي', hours:5, prereq:['BHR401'], spec:['مشتركة']},
+  {code:'BFB401', name:'مبادئ الإدارة المالية', hours:5, prereq:['BMN401','BAC402'], spec:['مشتركة']},
+  {code:'BMN502', name:'إدارة التفاوض', hours:6, prereq:['BHR502','L3'], spec:['مشتركة']},
+  {code:'BMN503', name:'نظرية المنظمة', hours:5, prereq:['BMN401'], spec:['مشتركة']},
+  {code:'BFB502', name:'المالية العامة', hours:6, prereq:['BEC403','BFB401'], spec:['مشتركة']},
+  {code:'BQM502', name:'بحوث العمليات', hours:6, prereq:['BQM501'], spec:['مشتركة']},
+  {code:'BQM603', name:'نظرية متقدمة في بحوث/قرار', hours:5, prereq:['BQM502','GMA403'], spec:['مشتركة']},
+  {code:'BMN504', name:'نظم المعلومات الإدارية', hours:5, prereq:['BMK401','BHR401','BQM501','BFB401','GBS504'], spec:['مشتركة']},
+  {code:'BMN505', name:'إدارة الجودة', hours:5, prereq:['BMK401','BHR401','BQM501','BFB401'], spec:['مشتركة']},
+  {code:'BMN606', name:'الإدارة الاستراتيجية', hours:5, prereq:['BMK401','BHR401','BQM501','BFB401'], spec:['مشتركة']},
+  {code:'BMN507', name:'إدارة الأعمال الإلكترونية', hours:6, prereq:['BMN504','L3'], spec:['مشتركة']},
+  {code:'BMN508', name:'المسؤولية الاجتماعية للشركات', hours:5, prereq:['BMK401','BHR401','BQM501','BFB401'], spec:['مشتركة']},
+  {code:'BAC506', name:'محاسبة إدارية', hours:5, prereq:['BAC402'], spec:['مشتركة']},
+  {code:'BMN609', name:'إدارة الأزمات', hours:5, prereq:['BMK401','BHR401','BQM501','BFB401'], spec:['مشتركة']},
+  {code:'BAC607', name:'دراسات الجدوى الاقتصادية', hours:5, prereq:['BQM603','BAC506','BEC403','BMN508','GBL401'], spec:['مشتركة']},
+  {code:'GRM501', name:'مناهج البحث العلمي', hours:5, prereq:['BMK401','BHR401','BQM501','BFB401'], spec:['مشتركة']},
+  {code:'BQM604', name:'تحليل البيانات', hours:6, prereq:['GRM501'], spec:['مشتركة']},
+  {code:'BMN610', name:'ريادة الأعمال', hours:5, prereq:['BAC607'], spec:['مشتركة']},
+  {code:'BQM607', name:'إدارة المشاريع', hours:5, prereq:['BAC607'], spec:['مشتركة']},
+  {code:'L1', name:'اللغة الإنكليزية – مستوى 1', hours:3, prereq:[], spec:['مشتركة']},
+  {code:'L2', name:'اللغة الإنكليزية – مستوى 2', hours:3, prereq:['L1'], spec:['مشتركة']},
+  {code:'L3', name:'اللغة الإنكليزية – مستوى 3', hours:3, prereq:['L2'], spec:['مشتركة']},
+  {code:'L4', name:'اللغة الإنكليزية – مستوى 4', hours:3, prereq:['L3'], spec:['مشتركة']},
+  {code:'L5', name:'اللغة الإنكليزية – مستوى 5', hours:3, prereq:['L4'], spec:['مشتركة']},
+
+  // مالية
+  {code:'BAC603', name:'محاسبة شركات الأشخاص', hours:5, prereq:['BAC402'], spec:['مالية']},
+  {code:'BFB503', name:'الإدارة المالية للشركات', hours:5, prereq:['BFB401'], spec:['مالية']},
+  {code:'BAC605', name:'محاسبة شركات الأموال', hours:5, prereq:['BAC603'], spec:['مالية']},
+  {code:'BFB604', name:'إدارة المؤسسات المالية', hours:5, prereq:['BFB401'], spec:['مالية']},
+  {code:'BFB605', name:'تحليل مالي', hours:6, prereq:['BFB401','L3'], spec:['مالية']},
+  {code:'BFB606', name:'مالية دولية (تمويل خارجي)', hours:6, prereq:['BEC403','BFB503','L3'], spec:['مالية']},
+  {code:'BFB607', name:'خدمات مصرفية', hours:6, prereq:['BFB401'], spec:['مالية']},
+  {code:'BFB608', name:'مالية إسلامية', hours:5, prereq:['BFB503'], spec:['مالية']},
+  {code:'BFB609', name:'إدارة الأسواق المالية', hours:6, prereq:['BFB605','BFB606'], spec:['مالية']},
+  {code:'BAC608', name:'محاسبة متوسطة 1', hours:5, prereq:['BAC605'], spec:['مالية']},
+  {code:'BAC609', name:'محاسبة متوسطة 2', hours:5, prereq:['BAC608'], spec:['مالية']},
+  {code:'BFB610', name:'إدارة المخاطر الائتمانية', hours:5, prereq:['BFB607'], spec:['مالية']},
+  {code:'PFB601', name:'مشروع التخرج (مالية)', hours:12, prereq:['BQM604','BFB605'], spec:['مالية']},
+
+  // موارد بشرية
+  {code:'BAC504', name:'محاسبة مالية للشركات', hours:5, prereq:['BAC402'], spec:['موارد بشرية','تسويق']},
+  {code:'BHR603', name:'علم النفس الإداري والصناعي', hours:5, prereq:['BHR401'], spec:['موارد بشرية']},
+  {code:'BHR604', name:'التدريب والتطوير', hours:5, prereq:['BHR401'], spec:['موارد بشرية']},
+  {code:'BHR605', name:'إدارة التوظيف', hours:5, prereq:['BHR401'], spec:['موارد بشرية']},
+  {code:'BHR606', name:'القيادة الإدارية', hours:5, prereq:['BHR401'], spec:['موارد بشرية']},
+  {code:'BHR607', name:'إدارة المسار المهني', hours:6, prereq:['BHR604','L3'], spec:['موارد بشرية']},
+  {code:'BHR608', name:'الإدارة الاستراتيجية للموارد البشرية', hours:6, prereq:['BHR606','BHR605','BMN606','L3'], spec:['موارد بشرية']},
+  {code:'BHR609', name:'إدارة المعرفة ورأس المال الفكري', hours:6, prereq:['BHR606','BHR604'], spec:['موارد بشرية']},
+  {code:'BHR610', name:'إدارة فرق العمل', hours:5, prereq:['BHR606'], spec:['موارد بشرية']},
+  {code:'BHR611', name:'إدارة التنوع', hours:6, prereq:['BHR608','BHR610'], spec:['موارد بشرية']},
+  {code:'BHR612', name:'اتجاهات حديثة في إدارة الموارد البشرية', hours:5, prereq:['BHR608'], spec:['موارد بشرية']},
+  {code:'PHR601', name:'مشروع التخرج (موارد بشرية)', hours:12, prereq:['BQM604','BHR608'], spec:['موارد بشرية']},
+
+  // تسويق
+  {code:'BMK603', name:'تسويق الخدمات', hours:5, prereq:['BMK502'], spec:['تسويق']},
+  {code:'BMK604', name:'إدارة المنتج والعلامة التجارية', hours:5, prereq:['BMK502'], spec:['تسويق']},
+  {code:'BMK605', name:'إدارة المبيعات', hours:5, prereq:['BMK502'], spec:['تسويق']},
+  {code:'BMK606', name:'التسعير والتوزيع', hours:5, prereq:['BMK502'], spec:['تسويق']},
+  {code:'BMK607', name:'الاتصالات المتكاملة', hours:6, prereq:['BMK502'], spec:['تسويق']},
+  {code:'BMK608', name:'التسويق الإلكتروني', hours:6, prereq:['BMN507','BMK607'], spec:['تسويق']},
+  {code:'BMK609', name:'إدارة العلاقات العامة', hours:5, prereq:['BMK607'], spec:['تسويق']},
+  {code:'BMK610', name:'التسويق الاستراتيجي', hours:5, prereq:['BMN606','BMK604','BMK606'], spec:['تسويق']},
+  {code:'BMK612', name:'التسويق الدولي', hours:6, prereq:['BMK604','BMK607','BMK606','BMK603'], spec:['تسويق']},
+  {code:'BMK611', name:'تسويق منظمات الأعمال', hours:6, prereq:['BMK604','BMK606','L3'], spec:['تسويق']},
+  {code:'PMK601', name:'مشروع التخرج (تسويق)', hours:12, prereq:['BQM604','BMK607'], spec:['تسويق']}
+];
+
+/* ======== مؤشرات ======== */
+const byCode={};
+const dependents={};
+COURSES.forEach(c=>{
+  byCode[c.code]=c;
+  c.prereq.forEach(p=>{
+    if(!dependents[p]) dependents[p]=[];
+    dependents[p].push(c.code);
+  });
+});
+
+/* قوائم */
+function fillCourseSelect(){
+  let seen=new Set();
+  $('#courseSelect').append('<option value="">— اختر —</option>');
+  COURSES.forEach(c=>{
+    if(!seen.has(c.code)){
+      $('#courseSelect').append(`<option value="${c.code}">${c.code} — ${c.name}</option>`);
+      seen.add(c.code);
+    }
+  });
+}
+fillCourseSelect();
+$('#courseSelect,#specSelect').select2({width:'100%'});
+
+/* إحصاءات */
+function updateStats(){
+  $('#totalCount').text(COURSES.length);
+  $('#commonCount').text(COURSES.filter(c=>c.spec.includes('مشتركة')).length);
+  $('#finCount').text(COURSES.filter(c=>c.spec.includes('مالية')).length);
+  $('#hrCount').text(COURSES.filter(c=>c.spec.includes('موارد بشرية')).length);
+  $('#mktCount').text(COURSES.filter(c=>c.spec.includes('تسويق')).length);
+}
+updateStats();
+
+/* فلترة */
+function filterCourses(){
+  let f={
+    course:$('#courseSelect').val(),
+    spec:$('#specSelect').val(),
+    minHours:Number($('#minHours').val()||0),
+    needsPre:$('#needsPre').prop('checked')
+  };
+  let items=COURSES.slice();
+if(f.spec!='all'){
+  items = items.filter(c=>c.spec.includes(f.spec));
+}
+  if(f.minHours>0){items=items.filter(c=>c.hours>=f.minHours);}
+  if(f.needsPre){items=items.filter(c=>c.prereq.length>0);}
+  if(f.course){
+    const keep=new Set([f.course]);
+    (byCode[f.course]?.prereq||[]).forEach(p=>keep.add(p));
+    (dependents[f.course]||[]).forEach(d=>keep.add(d));
+    items=items.filter(c=>keep.has(c.code));
+  }
+  $('#tbody').html(items.map(c=>`
+    <tr>
+      <td><b>${c.code}</b></td>
+      <td><a href="#" class="courselink" data-code="${c.code}">${c.name}</a></td>
+      <td>${c.hours}</td>
+      <td>${c.prereq.length?c.prereq.map(x=>`<span class="pill">${x}</span>`).join(' '):'<span class="muted">—</span>'}</td>
+      <td>${c.spec.map(s=>`<span class="badge">${s}</span>`).join(' ')}</td>
+    </tr>`).join(''));
+  renderDetails(f.course);
+}
+
+/* تفاصيل */
+function renderDetails(code){
+  if(!code){$('#details').text('اختر مادة...');$('#kpis').html('');$('#rels').html('');return;}
+  let c=byCode[code];
+  let pre=c.prereq; let deps=dependents[code]||[];
+  $('#details').html(`<div class="title">${c.code} — ${c.name}</div>`);
+  $('#kpis').html(`
+    <div class="box"><div class="muted">ساعات</div><div class="n">${c.hours}</div></div>
+    <div class="box"><div class="muted">متطلبات</div><div class="n">${pre.length}</div></div>
+    <div class="box"><div class="muted">تعتمد عليها</div><div class="n">${deps.length}</div></div>`);
+  $('#rels').html(`<div><b>المتطلبات:</b> ${pre.length?pre.map(x=>`<span class="pill">${x}</span>`).join(' '):'<span class="muted">لا يوجد</span>'}</div>
+    <div><b>مواد تعتمد عليها:</b> ${deps.length?deps.map(x=>`<span class="pill">${x}</span>`).join(' '):'<span class="muted">لا يوجد</span>'}</div>`);
+}
+
+/* أحداث */
+$('#courseSelect,#specSelect,#minHours,#needsPre').on('change input',filterCourses);
+$('#resetBtn').on('click',()=>{$('#courseSelect').val('').trigger('change');$('#specSelect').val('all').trigger('change');$('#minHours').val('');$('#needsPre').prop('checked',false);filterCourses();});
+$('#tbody').on('click','.courselink',function(e){e.preventDefault();let code=$(this).data('code');$('#courseSelect').val(code).trigger('change');filterCourses();});
+
+/* بداية */
+filterCourses();
+</script>
+</body>
+</html>
