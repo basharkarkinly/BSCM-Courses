@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>شبكة المقررات — علوم الإدارة BSCM</title>
+<meta name="description" content="تصفّح مقررات علوم الإدارة (BSCM): الساعات والمتطلبات السابقة والمواد التي تفتحها كل مادة.">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-M59Y0EVEJ1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-M59Y0EVEJ1');
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0F1C2E; --ink-soft:#1D2E45; --paper:#F5F7FB; --card:#FFFFFF;
+  --text:#16232E; --muted:#5B6478; --border:#E3E7F0;
+  --teal:#1FB6A8; --teal-dark:#12897E; --teal-bg:#EFFBF8; --teal-line:#BFEDE6;
+  --amber:#FF9F1C; --amber-dark:#E07F00; --amber-bg:#FFF6E5; --amber-line:#FFD79A;
+  --radius:16px; --radius-sm:10px;
+  --shadow:0 10px 30px -12px rgba(15,28,46,.18);
+  --shadow-sm:0 4px 14px -6px rgba(15,28,46,.12);
+}
+*{ box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+body{
+  margin:0; background:var(--paper); color:var(--text);
+  font-family:'Alexandria',system-ui,sans-serif; line-height:1.8;
+  -webkit-font-smoothing:antialiased;
+}
+button,input,select{ font-family:inherit; font-size:inherit; color:inherit; }
+a{ color:inherit; }
+:focus-visible{ outline:3px solid var(--amber); outline-offset:2px; }
+@media (prefers-reduced-motion: reduce){ *{ animation-duration:.01ms !important; transition-duration:.01ms !important; scroll-behavior:auto !important; } }
+
+/* شريط علوي */
+.topbar{
+  background:var(--ink); color:#fff; padding:12px 22px;
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  position:sticky; top:0; z-index:40;
+}
+.brand{ display:flex; align-items:center; gap:10px; text-decoration:none; font-weight:700; font-size:1rem; }
+.brand img{ height:32px; width:auto; display:block; }
+.home-link{
+  text-decoration:none; font-size:.82rem; font-weight:700; color:#fff;
+  background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.28);
+  border-radius:999px; padding:7px 16px;
+}
+.home-link:hover{ background:rgba(255,255,255,.2); }
+.home-link[hidden]{ display:none; }
+
+/* الهيرو + البحث */
+.hero{
+  background:
+    radial-gradient(1100px 420px at 85% -10%, rgba(31,182,168,.35), transparent 60%),
+    radial-gradient(700px 380px at 8% 0%, rgba(255,159,28,.26), transparent 55%),
+    var(--ink);
+  color:#fff; padding:38px 0 46px;
+}
+.wrap{ max-width:1180px; margin:0 auto; padding:0 20px; }
+.hero h1{ margin:0 0 8px; color:#fff; font-size:2rem; font-weight:800; line-height:1.35; letter-spacing:-.01em; }
+.hero p{ margin:0 0 22px; color:#C9D3E3; font-size:1rem; max-width:52ch; }
+.search{ position:relative; max-width:560px; }
+.search input{
+  width:100%; padding:15px 50px 15px 18px; border:2px solid transparent; border-radius:999px;
+  background:#fff; color:var(--text); font-size:1rem; box-shadow:var(--shadow);
+}
+.search input::placeholder{ color:#8A93A6; }
+.search input:focus{ outline:none; border-color:var(--teal); }
+.search svg{ position:absolute; right:18px; top:50%; transform:translateY(-50%); pointer-events:none; }
+.search .clear{
+  position:absolute; left:10px; top:50%; transform:translateY(-50%);
+  width:34px; height:34px; border:none; border-radius:50%; background:var(--paper); color:var(--muted);
+  cursor:pointer; font-size:1.1rem; line-height:1; display:none;
+}
+.search.has-text .clear{ display:block; }
+
+/* شريط الاختصاصات (لاصق) */
+.specbar{
+  position:sticky; top:56px; z-index:30; background:rgba(245,247,251,.94);
+  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); border-bottom:1px solid var(--border);
+}
+.specbar .wrap{ display:flex; gap:8px; overflow-x:auto; padding-top:12px; padding-bottom:12px; scrollbar-width:none; }
+.specbar .wrap::-webkit-scrollbar{ display:none; }
+.chip{
+  flex:0 0 auto; display:inline-flex; align-items:center; gap:8px; cursor:pointer;
+  background:#fff; border:1.5px solid var(--border); border-radius:999px; padding:7px 16px;
+  font-weight:600; font-size:.9rem; color:var(--ink-soft); transition:background .15s, border-color .15s, color .15s;
+}
+.chip .n{ font-size:.75rem; font-weight:700; color:var(--muted); background:var(--paper); border-radius:999px; padding:0 8px; }
+.chip:hover{ border-color:var(--teal); }
+.chip[aria-pressed="true"]{ background:var(--ink); border-color:var(--ink); color:#fff; }
+.chip[aria-pressed="true"] .n{ background:rgba(255,255,255,.16); color:#fff; }
+
+/* أدوات إضافية */
+.tools{ display:flex; flex-wrap:wrap; align-items:center; gap:10px; padding:16px 0 6px; }
+.tools .count{ margin-inline-end:auto; color:var(--muted); font-size:.88rem; }
+.select{
+  appearance:none; -webkit-appearance:none; background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%235B6478' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat left 12px center;
+  border:1.5px solid var(--border); border-radius:999px; padding:7px 16px 7px 34px; font-weight:600; font-size:.88rem; cursor:pointer;
+}
+.toggle{ background:#fff; border:1.5px solid var(--border); border-radius:999px; padding:7px 16px; font-weight:600; font-size:.88rem; cursor:pointer; }
+.toggle[aria-pressed="true"]{ background:var(--teal-bg); border-color:var(--teal); color:var(--teal-dark); }
+.reset{ background:none; border:none; color:var(--amber-dark); font-weight:700; font-size:.88rem; cursor:pointer; padding:7px 6px; }
+.reset[hidden]{ display:none; }
+
+/* البطاقات */
+.grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); gap:14px; padding:12px 0 40px; }
+.c-card{
+  text-align:right; display:flex; flex-direction:column; gap:8px; cursor:pointer; width:100%;
+  background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+  padding:16px 18px; box-shadow:var(--shadow-sm); transition:transform .15s, border-color .15s, box-shadow .15s;
+}
+.c-card:hover{ transform:translateY(-3px); border-color:var(--teal); box-shadow:var(--shadow); }
+.c-top{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.code{
+  font-size:.78rem; font-weight:800; letter-spacing:.04em; direction:ltr;
+  color:var(--teal-dark); background:var(--teal-bg); border:1px solid var(--teal-line);
+  border-radius:999px; padding:2px 12px;
+}
+.hours{ font-size:.8rem; font-weight:700; color:var(--amber-dark); }
+.c-card h3{ margin:0; font-size:1.02rem; font-weight:700; line-height:1.55; color:#060D18; }
+.c-meta{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin-top:auto; padding-top:4px; font-size:.8rem; color:var(--muted); }
+.pre-label{ font-weight:600; }
+.mini{ direction:ltr; font-size:.72rem; font-weight:700; color:var(--ink-soft); background:var(--paper); border:1px solid var(--border); border-radius:6px; padding:0 7px; }
+.tag{ font-size:.72rem; font-weight:700; color:var(--ink-soft); background:#EEF1F7; border-radius:999px; padding:0 10px; }
+.empty{ grid-column:1/-1; text-align:center; background:#fff; border:1.5px dashed var(--border); border-radius:var(--radius); padding:34px 20px; color:var(--muted); }
+
+/* نافذة التفاصيل */
+.overlay{ position:fixed; inset:0; background:rgba(15,28,46,.55); z-index:60; display:none; align-items:flex-end; justify-content:center; }
+.overlay.open{ display:flex; }
+.sheet{
+  background:#fff; width:100%; max-width:560px; max-height:88vh; overflow-y:auto;
+  border-radius:22px 22px 0 0; padding:22px 22px 28px; box-shadow:0 -12px 40px rgba(15,28,46,.3);
+  animation:up .22s ease-out;
+}
+@keyframes up{ from{ transform:translateY(40px); opacity:.4; } to{ transform:none; opacity:1; } }
+.sheet-head{ display:flex; align-items:flex-start; gap:10px; margin-bottom:10px; }
+.sheet-head h2{ margin:0; font-size:1.25rem; line-height:1.5; font-weight:800; flex:1; }
+.icon-btn{ width:38px; height:38px; flex:0 0 auto; border-radius:50%; border:1px solid var(--border); background:var(--paper); cursor:pointer; font-size:1.15rem; line-height:1; }
+.icon-btn[hidden]{ display:none; }
+.facts{ display:flex; flex-wrap:wrap; gap:8px; margin:6px 0 18px; }
+.fact{ font-size:.85rem; font-weight:700; border-radius:999px; padding:3px 14px; }
+.fact.h{ background:var(--amber-bg); border:1px solid var(--amber-line); color:#7A4B00; }
+.fact.s{ background:#EEF1F7; color:var(--ink-soft); }
+.sec{ margin:0 0 16px; }
+.sec h4{ margin:0 0 8px; font-size:.92rem; font-weight:700; color:var(--ink-soft); }
+.sec .none{ color:var(--muted); font-size:.88rem; }
+.links{ display:flex; flex-wrap:wrap; gap:8px; }
+.link{
+  display:inline-flex; flex-direction:column; align-items:flex-start; text-align:right; cursor:pointer;
+  background:var(--teal-bg); border:1px solid var(--teal-line); color:var(--teal-dark);
+  border-radius:12px; padding:6px 12px; font-weight:700; line-height:1.4;
+}
+.link:hover{ background:#fff; border-color:var(--teal); }
+.link b{ direction:ltr; font-size:.8rem; }
+.link span{ font-size:.78rem; font-weight:500; color:var(--ink-soft); }
+.link.soft{ background:var(--paper); border-color:var(--border); color:var(--ink-soft); }
+.share{ width:100%; margin-top:6px; padding:12px; border:none; border-radius:999px; background:var(--amber); color:#1A1200; font-weight:700; cursor:pointer; }
+.share:hover{ box-shadow:0 10px 20px -8px rgba(255,159,28,.55); }
+
+/* تذييل */
+.site-footer{ text-align:center; padding:28px 20px 34px; border-top:1px solid var(--border); background:#fff; color:var(--muted); font-size:.82rem; }
+.footer-links{ display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-bottom:12px; }
+.footer-links a{
+  text-decoration:none; font-size:.85rem; font-weight:700; color:var(--teal-dark);
+  background:var(--teal-bg); border:1px solid var(--teal-line); border-radius:999px; padding:7px 16px;
+}
+.footer-links a:hover{ background:#fff; border-color:var(--teal); }
+
+@media (min-width:700px){
+  .overlay{ align-items:center; }
+  .sheet{ border-radius:22px; max-height:82vh; }
+  .hero{ padding:52px 0 60px; }
+  .hero h1{ font-size:2.4rem; }
+}
+@media (max-width:520px){
+  .topbar{ padding:10px 16px; }
+  .brand span{ display:none; }
+  .specbar{ top:54px; }
+  .grid{ grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="brand" href="./"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHoAAABACAYAAADVuGMvAAAnCklEQVR42u19d3hUVfr/+55z7p2eRgpJ6B2CFMEuS+Iq2FAUZlZRUFYFK7suooJlZixrARv6VYIFsaDOWNZVcK0E2y4CikDoLUASUkhPZubee877+yMJxixggtGV3+59njwMyczcc87bPu/nvO+5QEQIh7iIiBMRa/36v/E63Bq18zs4EfH/1BwYIlKLgbScEAIANY+zxev/6IL9ygLmHThH1fTzi42ViLSfehM7lMUeSTBEhD8luGNNsP+/eJjD/v0I7pv9mgP833V0BtWW9WWHemPzv4ioOlKYzWGiPZ8lIjcReVqN76jj3bGibC3GGQcAqW00PDzmFqGFUA8XVthvXED/kbX+bwbNxxxCP6YGeRg3jB193yaLx2NZIZpCkego5N9iXew/itFEB307duAksB0xGn+GsOinYv8xYJUOALAfIS07qmkAgNEhKO9/1zGUSRxNDt3GlED7LxF0yrESl1mreNFMe2pHK/RfUtCt0Dj+F3uSpCPF759E301Caha2k4hsv9G0C1spKB5DQmJH9znAo/2OwzJiiKiaNEZ1NNj5VRYTCAP+AGZtzMKUQflYFtxI4PWCd1A+QSBAx+Kcfimt0zpqt+XXSuKJiPlH+4W/FeN3uMsPo0XIG+IdlW20M6X6VT3Qj27cUstb0KAdsmvVBvqTHQ3lCgBAfj8LB4PoJVLCaSMpLaCY1FcsWdK9dld1L7clkqLlVTatS1K0tObA9iGTsvcNPWHUfhk5mH1gyOtlvnBYHo1yHe24/yOCPlZTGx8iCwNIYAAbN6xOX/fIe+dF91SeY1Y0DIMYdBUW12xMgDIVgM6gzjIAdKzCOG2r3smxPGVU33fG3XXDSopaAADo9/sxGAyqw1ijExHrO2rsv2b4wF/7hh21ACGvl/vCYQk6g3fve3RIw4q915v7G3yi0krEGIFEBEsCEIICRCJAIAVACBwUAZIC1BBiTgUizbE8eXDmYxMW3f2eiprgHz1aBFessA4haBsiRtsSpn7Kyn9tT/BvrrvlQh+NEjQtCG9irGRHC5yIMICIQQC1/K1lXUoXf3qnuatmaly9TY+aEhhjhlSWHjNMMDVGwBgiIQDRDzv/CMQQCQkVKOA2LlA5Ccwuts/Szhsw8/ybp631A7BA4yDaO38GAAIRjTa+nzcphvzVXXfTzQmOkl5smix1VHxvxgo/WDGHty65fbrcVH6fp5YnRy0gJcHUiekEBLUOquT9OpnsgJlSv7MCQbAmIE5kERACEgcEQkTghMAYMQLUkLEqd9SwDe50xzVvzp1HhgS/38+aXXnTdmkUEc1fy4N1FFY6nKDtAGAejZa11yU1kfmy9URaehgAgEB2Ng+uWGF9tf2r1MIbl+S69sbGg8VBchbjEm2oc6jR1TrXSb3eiyqzB6yvGAuF9UkKCCwiklJyJARJBBwFcCZAAoFCAhMlgWASGAIjFOjkEOvB3+3/7PmX56Tl1IW8Ie4L+yQR2ZrW5TcPvjocjLW23lauX/yUC2+LYoTAy30Qlu/f9UiOXLH1WfcBq3dUkqkUMAbIqxJxS8JJ/e7p/8RV69ae+/D9bFPNBWAiKIGSKeLAAaqcFhh23CLSXYWR6ti+SF1DgyPR1dcoj/bWDd4jTtqBAEDqKIkxkhxEpDOu7TPl+AnnX3bZzmZh/1Ywys+K0c2/+yU0tq0gpfWkw+hjPhaWH1179zW0rmiBs0YxS2BMRZWtzoZg9E9eOPG1h2546YFHejn+vjMvsYynNyBZUlqMI7LqeFWpD+i8JPOMrEWnX+1dj3ZhgJSNgUlwoKjleGPOY8eXfrPvciyLXOE07I6YjtLSuQKha7EkubvnuH5jJl73x22/hrBbe7KfcOtHNJKWSoO/JBpsZd3tYtnI72cYDCrgCHnT75rr3lx6i1UXUxYyi5ugH/CwQueZw2b+fu4tb3z60IILKxZ9GXIdIN2ya6YwQauzSYh0dz2R8efz5p459sxCkAB+AJYBwLv26cMcmZkIPXpA9uLFMQQg4ACvP/j04PJPd86DchhrCI0sh24JYdPMZFk45KLjfn+Ob/yW5f7lIieYY/1yZAoCBPwIWVmYl5+P2Uf6UCAg27qe7d2saEbTqo0DZ81uu8miNUSM/dRnl4/2i5wVQetrIgddPfvluL1VE6KGZSlJYNeFKEvQP3HPunjqyafk7Fvx9OILq175OmwrMTVyCIMMS69JEHvpxB5XX/rMnI/AAsgdMU073z9Cy7xgegMAADAbABEAGU2hAfjp336blD58eAUAqGeuvO+2yu219wpnPLdsaEnBNUhn+0Zfctypo0efva9lrn0kV9uCWVSHwiDNMsgLBBjk5UH2ihUSO6CsuqME/aNU4OfGlNauKi87m+esWGF9+95Hfa1X31+cVG2dUmsZJkgQoHEsz3A9deYLj/wZEeXKdz/Nqpj75qfOCiMtxshgptKrenl2J982bkx29phtG0LL3SmjB0FaWlodcB3KP5p/Mdu5ZqwhrT6AEjRmW4dZo1bbT5n8hQNgb82mb5Jef3xtzfSF082nbpo7sabIeCMWYyidwoo4NU3FRb+6O/iH8xMTe9YQNTqqI7nXQ4VD8vtZHgDLBgAMBn/sGXQdKBZzH9iW3y2ya8sgtr9c10tKPcoCD7jcccxmE8AYcEBUCDU0/ndPpaQMrCUAhMbxHHYs2J7Y2dFpU8u8PRQKca/PRwig1j/70jj4eOULnspIcg2AwYD0iMZlw+Aet4yee+fjfgJ25hfvx5tz/7EysZT61khp6hZo5Zm27f2fv+Hsvql9d5Xm5TtTs8uiiDnWfqI0/blrFiQWrRsPkQoAKRtVnAGQcENN54FbZfaUQKchF71GE0z+0biX7GOnTKkPLVwycfNX+16vlYI1uLgp4526J9F8+/G7bpwwZ8nresDrNdu6Fsv9ftFauGVEHvO9twfwspKR9sqaYZZlDdWrazNVNJrmBNKEtAAMCSAJABGAcQDRVLyTGA9lA3rPTL3sj4+S3y8gEFBHko2AdrqKw6VB7UWPB0ECIi33+0WOz2eBTYf8WXcGHR+tuJtVR8Dg3HBGpV6TEhczhvaeMPrOWUuXdx9tzyn8MprzzMevp9WafWvsaLiiUq9Nc+3oM3f6Wf3S+u1ePtovsvMCFhQV6USUXPb4pA8TS1YNAUNawFCBlDooScDQwEgFi6/5ol9D+Z4l+1+9rQ9Onncvhac0fLf8u4ThOcPffP7xF73f5ZeFGjSdR6VpVEb1i2c9+eLsoM/3QJ7fLwDgiPGaQiGOPp/MaRJwYeGObraPP/497dp9nrj1zye7DJnpYAxASQBLASkJSirFiQwgIiBEaVkM6IfWGY7MBARdr6xOb7GeRzRUhohtttBDfdlhXUVbaMxQiBMAywkGre+++y6z4KZblmZs3nm3PRpRYGOGCyy9LsO91zjnxLNOu3PW0g8vn+nKKVgR/fLaO+amHTDHREAadrC0+mRRU3di+jkDBw7cvXparpadF1CQH1aQkRErDgenpxStGQJRI0aKBGlOvTK+R0Wlu5sJNo8NONOkw20660tV2o4P7ynMveZNINKG5Qyv3vD110k3zp7+TkpP92xLB27ZNFarCWu94n99Z9Wqc1cEg1YoFDpkXxqFQo1hzueT4HBAydvhMeX3+193Pjg3v9NXq15I3lsyIb60IlOrrLFkZY1h1tUrMmOAjIDbBAOXTYc4p82yC91w6SLqsYmGOLuIuHVRaeeO6jgHGF0y1wAAQFYWtTlGN4OnZuDQ9P9uiFjQ1vjdFoKFiBDCYRb2+cAHIEHXoXj+/Kli6457kw7UZVZHoqayJLNxzvckuPOsWVdPHtpv6L6vb77Zcepjj0W+vnveZQnrd79i1UVNAEDDwUX18N5jfx+89aMNoZCe5fWaB2Mi16H8wQu/7lS05iQlpbJsHlExYuI99Af/U2zflnT+rzfG8J3/uj6xYU9PyzQkEihui9O2JmT9o9+fFk+Gmhoqrq93p6enF8568JnXdpJrYp1bt/a6Be+bJMrfvXD8cEQsDIVC3OfzyYPzQ0QEUECEJa+8NEXfuu1GZ0XVSN2IgjIsAIKYUlITXDDQGCjBoYphTCbE70KubWxISixiZmyD6NHLiu7dVZxod5Zp3TOZwZkpYzEtlpyhi+7datK69f6+OTa3C4z9VLw+WjqOABD8foSMDI7TpzfSh4xBwVtvjHJ9tz7QqbbhDKprgKglYzZAWzVHqOicNk/d67+zH2Js16JF9p5Tp0a/f/nlk9k7Kz7Ta0zd5FzpmtCKeybNGv3kg/M2+P16ViBgtfQ+RUQp4sELNqWUbO4EyoKSjGFb0m57ewgEshUE8hQiqh1E8a5FNz6ZWvD55FhDg1XD3WTqbm1P2vGfnnL9/PElO9e7Yp3ijW7x3eTU3FfWfK/pfSptyqzx6NpEj/PN3JyzL8FAgCgQIFizUODI6SYgQlFoyTmOTZvuTKipPRXqGsAypQkAKDgToAmoJmnF3O71kJiwQnbN/IINGbw27bgTCtrDRrYHCIufcs2t3XHrDfPD7WNDIICQDQzymgBIMEgAoIhIFL/x0hixccs1zuWfj3cZFpimMgGIORw2W4XbWVA7bPANfSZNXgr3BWB17mqt59SR0a17t3Yx5jwRSohGHHU6GC4JenFq3NujF8yblztihDY4GDQoEOAAoCAQwCbI4iLDsitJwHQnkImAutOgObfqAAAlG5Y70xCrieiK0mUPo2PlW5fHDEtWgG5ifcnvl74YDJ4/NTATAFjxrl3dImkOe01dlAydsQplUX599USA+lQIBovXFBdrIxcuNHfU7k/zLHhhXuI3Ky8XkQhYlmUAoRBuXWtgHGo98f+KdE55A08e/lHGaWM3QiTSmj8QeXl5ANmNGXT2Ecp9DyL5Ngi8fRQoIqxesECzFxVhGeQpyPvxn7NXrGhEfq0AHhGJ0pWfZeGq787X9pZMcldVDRKmBRagIsYtjaEeczmgMiX5ucIJ3tkjBwwoXz56tMjOyyPIDiDkBcTG6//yQae95dkRjoYulV4c58zv82ruqOLNX1kDBpymmiZef7AosWiNVp0xwm7eN3FFcvnWQZLblXSmiqIh513a03f969UbV3aKGzgQoVpJ+PyNGIyb5tn9t4dmy00r/lRCTB7QPVQblykwoeekS303vH/Fu0tWrgVtYK1pyn0MWJbDjtempc+YfvwpC3a/+CLvOXVqdPfLz09M+D7/ifiGhgxTGRYgkqbrWp2mqWhq8hv1vXr9X49Jf/wKDKMFZzBaZN9wA0F+Y4lTs5GEs7LQO2gQz9+4EbLy81VTLGb5kA9l+XkqG7IPEiZtIbmwLe6gzS4CEUDXoDoa62TlfZSOpaXDYE/BqXSgKptV1g5IUIQQM0ASmMAYcVI6OOxwIDlhfWTw4Nu6Xnr5BweBjNerwOdj+GZYbrx9ziuZ+youq6ptMHQivdrtqMLrpuTUnnZa/ggA9e7uTRcsK9l3b+5JZ40LQKAgAAGxO+9F1jPnj9HC52/7c8bObx6TEcPgJLRaLTVWNvLsq3pfdu2S8i8+j+uUkWFC1wR35ZqVRsrpF1WvXnLXnZWFG+8ttMgst3US1eCprOjUteBbu2v4fsms/bpgWbpQ9/bsO+nsvlnh9594wnbOjBlG0byH703ZvvMOrT4KpgaGAKlDXBxUpCb/o2bocYFe53tXNoexPL+fZzd6HgIACIfDzJufj7BxY2MmchSVLh1GmPj9fha85x61Y1HuRIdpjiFLSpKSQSwGzDJQr6omsFRX1ERnaVldHZaV5BacQcwEiJggLSVBKclI6cgZSLsNqjzu9dGe3Z7eNv3GF3MQo+T1cgiHFfj9yIJBRQiw644585OLq2+qbYiZQioW1TVVdfKw8UNuvG7ZtNxcLXfatM7nr/zwm8+E1fluW/L82ced/Ke/F652jssYoSA/X2zLyjITHr5mZUr57qFmBE2tgWm1tkQozxpxa6+/3DGXDINBRYUHEhPrF04fidMXrjHfWXTH82Wx6j/uMuyyzB7PC12JUKi55S6HC3o7bOzhrn0mjuk/6O2X5s51Tbnjjvp99wZezty2+3JoiEgphOQg9cp4d3ndkMGzu1034zmwLCAv8LA3BD6fTzYDUgj7AMMgW+OkworCTLlpYxqsy88QnvhU2Ftgr482aMQ0we12u+aJS0Onrdr9uzEPJ/bqVdMW3HQIiy6PA+hktKykaOadyzZ9318tWrw5tbIGgDMART846eZcUCmwlALFUCIDSYxxgYwzmw7EBRyQ5gGZkJgn+/d9NePSK5YhYowAEDZs0CArS+WHw2ywz2csJ7L3vuuOhZ1LKidXR5VFlgR0O0VBetKVI+8JLJ42bZqWm5tLU1d9+vFrwsqONUStEwyylp+YfYrLlbCxurraFV9ZGYEePWjPl0szPUtDnyRW1/SMxpjJTMHRlcj2pnR+otc9gZlhnw+8oRALBAIyo7iYT8vNtT228PbVO0H03yviZIndjds1p0pIjBe3pWTecs2wkx7x+6+wBx94PVo4768vZWzdPtmqaTBBEQrORElm6orYjBv+2D29x04iYmtWr+YjRowgCAQUbNyILS22kMgplv19ON+160RmWiN5ZeVxZn1dT25ZblcsBhrgD1GaEYDQAJQCSIiDikEDbul0+VWPUG6udhDktgWMNaFuJ8CPtSyclYUAAKq+JiWBc7BM0wLiDKVqEjYBMYZCcARAEHYHgKZxhcRrgaTpcu2COM+/qHuPd+X5Fy5P93hKAQBg0pXNbhpg2zYEn48Gh8NGwf6CXo475jyfsr8suyZqmgI5QpxbFA7uP2fkjBsXL3viCdu5FRVmLoBWHYulqohSibUW7TQs+w2ffPL0ixdOPHPl7t3GmKFDFeTnQ/dR5+/c9s47o+Wqz5cll1YNrlHKhIqoyqwp/dPW2ff18oZCvvxwWAWys9ne3r0FANQPHXrajLX5G5aV2Zy4n2uK2zUx2Rn/yi0njnrE6x2kB4OLo7sf9D+asWfnZNOsN5mNI9dtojgt5dktd90zIwcx2sxYjcjLI1i4ELGJHy8hcrPwK2ewvYUT+Z2zR+mRSA+HKRsNxZBgmiYBWKZiDExABQAIiIwMyUjFgAOYAlDHsorOjXikiNqbXh2W5QIAKIbaZOV/KM9dV9cPhS5JSQTLBEKGYFkxQlYWS/QYXGibbXEJ+ZHOaZuc6anfekb9vqBlUV0IgHtDIQCvVwEA5AcC2uBg0AAE2PNC7iWedRsfTaioTTeVNJRpCeV2s71Zg+b0v/lPDzxx0022Pz35ZMwbCvGwzye/2Vdw5o2rv/l4b1XUSjAIOlkgclziunuvmLTgy02bPKcPHFhLq1drOHKkua62Ni3+3gde61xQmlMbtaRFXOnCqe3qmvz+8Y/fPT4cDoPX6+VrtmyJO3nAwPLpbz330gpdn1yKAs7VbJ8sGnPRxG++Weo48cTzSvfOv/X+rgUFt1tR3QQlULg9YldGlwd6zZozh6REaFwzgkCAN9OehZvXDRDvvz+NFxZPSIyZ3RgBkFQgQZqASACkC84BWCNhqRiA0gRYhBCxDGBMmISMEFFxu82sHp41qYv3ivcPVt50RIxuVoIyIo/asy1VjyiFDkQAgFh8AhNSxIqTkkqyGvnWf3Mj5PVyuP56hOzsRqTo97O8vDyW01SEt4+ok3j4/rmddu2dKuqjYDFmCMvS6zQNSk864c7eM2bcP23IEC139Wr2dcGW007t3n/Ve2vWyHEjRhh3v//+4x/urrzBFrUMu4U8jazIBQPTR/kuOn9tbm6uNn36dJOKi13QuXM0DABD59z3VMLmomujMVIWCos5Xfq+3slXjnpw1uLiD9e6XKf0cno8nspIZXHmuBUf77TrzoL3z504cv78GfUzZsx3Fb752C2Z/3xvthWRElSy4o4UrWBA1rye1/951nKlRDaRhEAAYdw4jiNHmiUFW3urV16/Vdu9e3InKR0kCSwAg0gxXTABDjsYNhvU2fRKnhC/ydTsm0nTdjJlbTH6D6KIFY0apeV7krqnNEBad7SndmXVLlbfzZVc2EpGzqZqnVibBf1z6rxDANzr92MeAGR7vQyysqwmmpZBIIAQDB7cjttBFO9Z8NSV9j2FN3tqG7qr+gZLkSJBpFU6HVVVpxw/refkq97K/+c/E07KHl1x68efPLq8pPzmizNTbrjp1FHPfZif7x6blRW7+tEXlu1vEL/TDMNwS9TjotUbzz2j/+/HjRu3f+nSpbZzzjnHAQAmhMMmXjHZ+HbGPXd7NhUHG0wyUQLfn+Rcf9Zrfz0V8ksZZNn0nZUH5KDU/tWPvffGjDRn/JcTRp/5LQDA/m/fv9Tz1iNLnKXlliUSSKgEbVdm1vO9Ag9fvXyUEtl5JJutOJdIG//007c4tm+b7amt81hRAwAhhiRt3MagRtchFhe3zkzp9DF26fpZ7A8Tvu2pJe4HyzwqwqSp1IkOVZiI7WVdiAjD4TDzAgDk5zfnfY0/za8bXRZCVhZCfj6Gg0HytYz7QkDZv1YMYF+uvFQrKb3SE4l0g4YYWErFBIINXE4oj/N8UnzqCTcNOfuCzZv+9jfPgAsvbJj5+tsPfV0dmxkpb6DeVqTwLf+N2cXFxTW5ubkHLrnkks6PvJr3RaxO9XKZhuGwUHfp5tp7599yLgCUrfxgpfOkc05CAKhdgyP5SP6t+cXk2R/a99aNqTOUqhYIA2Z7x/Q/a9RXdXV1cW63u/6Dbdusc/v1iwE0Fi1cQ5ToeHDc90n7d2RYymUJQ9f2djnh0653Pj4ujGh4KQSAPoUAtOcf750Y969V8+Orqk9SdXVgEcQ0BTbUEA7oosTMTH1HDR32asY5F/3zR9u+AAheL4NBg/BHPHbLtQYQEAhYeIj68zaX+/6kFjWmQBAGAC8AbHviCWFPT2ddfT6jiSz595szBiSlqFiVN8D67vtsXlR2sV5Vc7rHsDSIGaAYi5GUOrfZsC7eXV6ZkR7oNuv2/wPDAPJ6OYIXKOTll817bkVJJZ6cGosZesTUu8XJFx969PapDzzwoGPmzJmRl55/feiab/b8E+vRwS3T4BJ0u8P6dtQFg7xnTZy4c+uyrbbt27ZDEhywfVCxveGkvTDFs7Pm+XpDWuVgcfvZAy6ecNdNf68pLEyMy8ysBwDYXL5Zq3xpoXXKXx6Nlj495ZPUojVnGDGbqRtcK3H32VZ//2sn9EasptW5Go6cbi4nEv0fnzcnbu++O12xqGZJaSCAzm02qLTb90a7ZM6vu/Hmxf0Qy/6NNPF6f7E+t/bE6LZuWogiAF3btyPT+H5td0/h/uOM2prTecn+gRiJ9k9QyEASmJZUCGAKIhtoAqoEMyIZmUui488N9MoaUUCNW4AKg0Hl9YZ4OOyTb3341eC/f/DNSr1O2jymJBdKkdHDPem6wIzXRowYoa1evdqx8KHnR236YtcSF7fHIUlDN0l36GZ5517xsy9/7NbnEZGAATCPA/523m252s66aRGSssGBXJzRd9gf7rp2XU1hYVJcZmYdwH4BX61k/MzLa/ctuPq59O0fXmUZZArl4JWOHlUHzrjypL45F24vfuklV/qUKfU7Gyq6u/760KLU/WU50jBI6dzUhKbXup3RuoyMJ/dedd1DJ8XHH2g2mLDXC95Wwm1dV9+eOr4jbhm3KADoBACVR9jQsAGAVfDUYzd7YupUyZlCBGTIQEkLmWmQVV3pIc3ew1FdYyOiDDuRsEkJYBoAUoKlSCKgJCRd6BqArkOlzbY/lpS0pP7kExb1yRm7AQCAli2zwTnnqGZQR0Rs+vSFfOHC6Wbw9iduiRWac3l9g+E0lOCaWdt3wtBRE6+8dP2mz1al9B01/MBL9z971p5/FYTs9RjHSRp2E3S3AIjp5neuTq73Ewak15d9VzCI7WuYxJVADhxrUqjgzA8fHtQDIAYAGgBotVvWOBKGjS7f+8bdczO+fv4WGau3gLvAdHYRxSMmXthr/PV/3+W/wt4zuDi6Y9nbpyd+/MmSxPKqrhaAAaCEcDpZeUrayqoTR17f94IJ3wIArJ42TRuRm2sdqSrlcIJv+bu8vDyek9O22jUiYthKkMZhNIIhoqrYuX6o7ZkX1zoLSwDseiPlKXhTtUYjvCLTAoUIypISSDVqK5Jo3JITABqDasarY3Fx32DXLq8bV133bhfEg1oOgwYRBoOqNfgjAvT5vCwUCsF9lwQ/dVbhaLAihi5BN53WhpuXzh0LALHCXbuSM3v23PHGgwuyij8veDWuSmSBEVMClKUr0pExkJyAYgQxIkKLWWRjGo5MvOmPz855ygvAQ0Sq/Kt33SmnX1S79/NXL0/+YO7L9poCS9qdxDW3tqfX2U91nzb/pg2DlD54Ixi7Fz08IXH71pfjSmschqkZOoDe4LBBZZ9eD1f95Y67BiMaTTm17MCmhnZV67IWOyGxww0iHA43Np8X7XcKRRBTkgzThFgsCkZdPcTq6sFsiABICcgZcF2AFufiWkK8plwOvdrttKpTkjaU9Oz2Qtnw4ZOsO24bnHbvg2NSr77+hS6IB8jr5UR+huGwbAEwWCsanQYNGkSIqE6ecPwUadYWiQapk2majjIavGDCnDAAUKbDsW/lKx84L5l93ffjl00/PZJkPWepCGCDpUcNE6IR07RqlGGaJNEArJExra6/CE9dOPu55X6/CBFRfsCnpZw+vjZ/2avDXR8/97S9vlhZDidxtLSi1GGrul3z2K0ACgbvcBlFi+68K337yjdd1fsdhs4M3S70qsSE4uITTjmvy8w7bzsO0Qh5vRyDQas9Qm7Z6N/69IimYhHV7hjdlvhLBHgAyFMbvPu9uJq6YRJRSiWZJALgwBSA5IoKtaROdRCNFprJKcWmTdvqSEjYikMH70gZNHxHy8H5AVggFMLDAZDDxZvmFpl3Hn1h1O7w9x/ZolwDImW3QMN+zn+Of+u+cxMRq5adfZPt3H88GQOB8M4dj59avXb/9dH9dWcJE1M50yBqmUq6+FaZ7nhkRvj+F6uqqtwJCYjlm3c4UgaOKNq0dMnITl8+/26KuScjxsGyYUxUJA8psm54ZXSaI2F7KVE6PHvTgpRdqy6Q9ShNM1naMU4/EN/525ILvJdknXLKNvKPFhDI+9lWTER6W3u5fkrQzcdF0eFcN0AAEIOKiFgdQDIBUH3T590AWAMg/wxQGdZ1CaZ5eMTu9cKhhNueTfSQP6T77vEZC6+6Z4r2fe1iXictBkAuUprRQ1+dMfOsCaPGnLVn9d25TiMukU6d6YsQESst3Z265rXP+yhDuSOmVTRxztWbEdEIeUP85Ju76F27xDmga1Zdwd8WTHZ9+cb8ZFnkNGxo6RgT1Ul9DlSeNevMnsPHrt2zZ+1g15v3v51UuL6vNLlJ0gUCM7TijMGfbZl974U5iHXL/X7RXCf2W+hYbRmj9SZWpfVuSioAlCEiNdWnIR5hM5wAMAzAUkaPRsjOhuysrMa91mCQDlezfIga8J9sPAv4fFrwrbCx6II5sxzbGh5mJkggSTalRF0qFnW+YMjsM26/5nVENJadfZMt/Q9nOIb1SKjDJgCDDEE9s0D74J132Ln/+EesGafsfubOecmb8250RHeD8mimBjGtJqmXVTX0opO7n3/LmsLPXhjrXPXWSwmlW1MttBnMYIKJNFbUefjLxbMeunYkYkMo5OU+X7jDSqI7RNAtUDcHAHszJ93CyhkiWoeoVT7kfnSzMNvTLnJk0LFGII40W92fA4AMYDYP4gorN3vG7cn71QNoKakEkbAsgW4OrFfS39LGjPjrSTdPWkUNsZafdwOAwWy2GBkmEClt56vPjtW3fOVPq9wyUslyyRySNKwX1XE9o5GLg17P4LGr6xfP8LsL1lzrrCsHi2ymUFyrE+lQ3nXkzJ5/fuBRkFa722Z/iXaeQ61va0Gr1jlcm0iUo+yj7oDYxT6YMV8796k/xV65aNZM9+66eSxiAerM0hUxByCLxYHkmZ7P3H3Sl9m7J3+XoscVOEZmcXN/QVLkQPFgc9u6k3lZ0ag4eWBgHFSCpUWk4A2c6xIqE/uvVLP+dpdt08eDrQ9ygwmlGz3SQgK0mRx0vcbVu7K07xlT+15+47sEwIFIHU1N3c+YP29rjVlLQR91wCcCRDy6VpKj6fVq6lN2I2IxEeGa6QvFyOevNZfe9sjV8rMtTyYaZJdCWUJD5GBypyAQdgSTxwDAaOAOBI0a9ERdCRerA84joOymEg6LEOrRSk5piAw+620YMX4p/2zhDfH7vvsdlewG0t0Gk5KD7uEHkoasPpB99ZT+p4zZRP7RAoMr2hWPj0ButHk9iMgFAJG2vP+IB7J34HndHdqheai+roUjp/Ppaxaanz38zGn88/xFSfXRvhEVlUxToDETNGYQR8U1zURds0DYJHBuSk03SehRpvMIM2xEkf4jUCb324u71+2Pryo4wWZUgmWpxgpOkiJm7wyV6Sc8veuGZ245FTGyIeTXB/uCxs9xsx3ttttFgXbkQA7D7vxIczvifhtCIX2wz2ds3LexU/U9ix9zFxdNdsVqQTIlUSNgOjGhmaBrErhmgabF0K5FQWgNABgD06aDwV3gqC0HjQNYxCRwkgKUDq4kOODotbZm0Dm39brg+o8A5A8dn78C4XEYYzyIn4jIAY2nMRy+9+pQN/ytHWLT1utgD7NgkP/4/Athzaq74xuqj3ezGFjMANQtyYUkIUzURBS5HkXiEgCBUFnELYMkYwDS4lwwBIcHquN7FkR7jnoi7eI5/4eIBnmBQ4hURzQX/pz43CRosy2uHztiEB2lFIfgeY/q5EK/38+ym4oaiEjsfvHx87U92y/jtfvHpkKFh6kaAFUDwCMAYDVRuayx7k2zATA7VIHTVAnpX8g+J78mzr09nIRYDQDQOnX6T11t7Xlr8h46ElE8ANRAq5OEfm2Lbhl3W7u29oylJb5obnBr1umKiu3d5Ievn25V7TrdFq0cQpGqVAtZJyKSmmBlYPeUmXFpG/SE9H/C7yatS0ofuh5idY3fG/Jy8IaOzeMyiRgQUVwTr/qjU+Dbc4QhEXX6JY6BPJoTfFs/AKZZSNT62EhhByLSC4mSC4gSiUiA3fMjip0A2HL/aHGo7/yvvH5LJwA3Ku1hQpLfz5b7/YL8ow95XigBIHmBNwn33463PtzjEI41YeFvcQxtGddhzhvHtjyg7Ycf+N9TB9qycK0X+ijvIdp7ovDhxvXf8MiIds+x6cjm9KOx7F9iMYnI1ZQX/u/qoKvZ+iQAVB4lT9txj1D64bs4QCk/li2tldVpv8a9/qvi/M8NJS0fNdFRoeC38HS5/wfBmJsAgg6hygAAAABJRU5ErkJggg==" alt="Support Channel"><span>Support Channel</span></a>
+  <a class="home-link" id="home-link" href="#" hidden>🏠 الصفحة الرئيسية</a>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>شبكة مقررات علوم الإدارة</h1>
+    <p>ابحث عن أي مادة لتعرف ساعاتها، شو لازم تنجح فيه قبلها، وشو بتفتحلك بعدها.</p>
+    <div class="search" id="search-box">
+      <input id="q" type="search" inputmode="search" autocomplete="off" placeholder="ابحث باسم المادة أو رمزها" aria-label="بحث عن مادة">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5B6478" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <button class="clear" id="q-clear" type="button" aria-label="مسح البحث">×</button>
+    </div>
+  </div>
+</header>
+
+<nav class="specbar" aria-label="الاختصاص"><div class="wrap" id="specs"></div></nav>
+
+<main class="wrap">
+  <div class="tools">
+    <span class="count" id="count" aria-live="polite"></span>
+    <select class="select" id="hours" aria-label="عدد الساعات">
+      <option value="0">كل الساعات</option>
+      <option value="4">4 ساعات فأكثر</option>
+      <option value="5">5 ساعات فأكثر</option>
+      <option value="6">6 ساعات فأكثر</option>
+    </select>
+    <button class="toggle" id="pre" type="button" aria-pressed="false">لها متطلبات فقط</button>
+    <button class="reset" id="reset" type="button" hidden>إعادة ضبط</button>
+  </div>
+  <div class="grid" id="grid"></div>
+</main>
+
+<div class="overlay" id="overlay">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sh-title" id="sheet">
+    <div class="sheet-head">
+      <button class="icon-btn" id="sh-back" type="button" aria-label="رجوع" hidden>→</button>
+      <h2 id="sh-title"></h2>
+      <button class="icon-btn" id="sh-close" type="button" aria-label="إغلاق">×</button>
+    </div>
+    <div class="facts" id="sh-facts"></div>
+    <div id="sh-body"></div>
+    <div class="sec" id="sh-comments"></div>
+    <button class="share" id="sh-share" type="button">نسخ رابط هالمادة</button>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-links">
+    <a href="https://t.me/karkinlysupportchannel" target="_blank" rel="noopener">📢 قناة التلغرام</a>
+    <a href="https://t.me/SVU_BSCM_BOT" target="_blank" rel="noopener">🎥 بوت المحاضرات المسجلة</a>
+  </div>
+  <div>Designed By: BSCM Support Channel — B.Karkinly</div>
+</footer>
+
+<script>
+/* رابط صفحة المنصة الرئيسية — بيظهر زر "الصفحة الرئيسية" بالأعلى */
+const HUB_URL = "https://basharkarkinly.github.io/";
+
+/* ======== البيانات (كما هي بدون تغيير) ======== */
+const COURSES = [
+  {code:'GBS301', name:'التعليم الإلكتروني', hours:4, prereq:[], spec:['مشتركة']},
+  {code:'GBS302', name:'مهارات الحاسوب', hours:4, prereq:[], spec:['مشتركة']},
+  {code:'GBS303', name:'تحضير السيرة المهنية', hours:2, prereq:[], spec:['مشتركة']},
+  {code:'GMA401', name:'الرياضيات', hours:5, prereq:[], spec:['مشتركة']},
+  {code:'GMA402', name:'الإحصاء والاحتمالات', hours:5, prereq:[], spec:['مشتركة']},
+  {code:'GMA403', name:'الرياضيات الاقتصادية', hours:5, prereq:['GMA401','GMA402'], spec:['مشتركة']},
+  {code:'BAC401', name:'مبادئ المحاسبة 1', hours:5, prereq:[], spec:['مشتركة']},
+  {code:'BAC402', name:'مبادئ المحاسبة 2', hours:5, prereq:['BAC401'], spec:['مشتركة']},
+  {code:'GBL401', name:'قانون الأعمال', hours:4, prereq:[], spec:['مشتركة']},
+  {code:'GBS504', name:'تطبيقات حاسوبية في الإدارة', hours:5, prereq:['GMA401','GMA402','GBS302'], spec:['مشتركة']},
+  {code:'BMN401', name:'أساسيات الإدارة', hours:4, prereq:[], spec:['مشتركة']},
+  {code:'BEC401', name:'تاريخ الفكر الاقتصادي', hours:5, prereq:[], spec:['مشتركة']},
+  {code:'BMK401', name:'مدخل إلى التسويق', hours:5, prereq:['BMN401'], spec:['مشتركة']},
+  {code:'BEC402', name:'الاقتصاد الجزئي', hours:5, prereq:['GMA401','BEC401'], spec:['مشتركة']},
+  {code:'BHR401', name:'إدارة الموارد البشرية', hours:5, prereq:['BMN401'], spec:['مشتركة']},
+  {code:'BEC403', name:'الاقتصاد الكلي', hours:5, prereq:['BEC402'], spec:['مشتركة']},
+  {code:'BMK502', name:'سلوك المستهلك', hours:5, prereq:['BMK401'], spec:['مشتركة']},
+  {code:'BQM501', name:'إدارة العمليات', hours:5, prereq:['GMA403','BMN401'], spec:['مشتركة']},
+  {code:'BHR502', name:'السلوك التنظيمي', hours:5, prereq:['BHR401'], spec:['مشتركة']},
+  {code:'BFB401', name:'مبادئ الإدارة المالية', hours:5, prereq:['BMN401','BAC402'], spec:['مشتركة']},
+  {code:'BMN502', name:'إدارة التفاوض', hours:6, prereq:['BHR502','L3'], spec:['مشتركة']},
+  {code:'BMN503', name:'نظرية المنظمة', hours:5, prereq:['BMN401'], spec:['مشتركة']},
+  {code:'BFB502', name:'المالية العامة', hours:6, prereq:['BEC403','BFB401'], spec:['مشتركة']},
+  {code:'BQM502', name:'بحوث العمليات', hours:6, prereq:['BQM501'], spec:['مشتركة']},
+  {code:'BQM603', name:'نظرية متقدمة في بحوث/قرار', hours:5, prereq:['BQM502','GMA403'], spec:['مشتركة']},
+  {code:'BMN504', name:'نظم المعلومات الإدارية', hours:5, prereq:['BMK401','BHR401','BQM501','BFB401','GBS504'], spec:['مشتركة']},
+  {code:'BMN505', name:'إدارة الجودة', hours:5, prereq:['BMK401','BHR401','BQM501','BFB401'], spec:['مشتركة']},
+  {code:'BMN606', name:'الإدارة الاستراتيجية', hours:5, prereq:['BMK401','BHR401','BQM501','BFB401'], spec:['مشتركة']},
+  {code:'BMN507', name:'إدارة الأعمال الإلكترونية', hours:6, prereq:['BMN504','L3'], spec:['مشتركة']},
+  {code:'BMN508', name:'المسؤولية الاجتماعية للشركات', hours:5, prereq:['BMK401','BHR401','BQM501','BFB401'], spec:['مشتركة']},
+  {code:'BAC506', name:'محاسبة إدارية', hours:5, prereq:['BAC402'], spec:['مشتركة']},
+  {code:'BMN609', name:'إدارة الأزمات', hours:5, prereq:['BMK401','BHR401','BQM501','BFB401'], spec:['مشتركة']},
+  {code:'BAC607', name:'دراسات الجدوى الاقتصادية', hours:5, prereq:['BQM603','BAC506','BEC403','BMN508','GBL401'], spec:['مشتركة']},
+  {code:'GRM501', name:'مناهج البحث العلمي', hours:5, prereq:['BMK401','BHR401','BQM501','BFB401'], spec:['مشتركة']},
+  {code:'BQM604', name:'تحليل البيانات', hours:6, prereq:['GRM501'], spec:['مشتركة']},
+  {code:'BMN610', name:'ريادة الأعمال', hours:5, prereq:['BAC607'], spec:['مشتركة']},
+  {code:'BQM607', name:'إدارة المشاريع', hours:5, prereq:['BAC607'], spec:['مشتركة']},
+  {code:'L1', name:'اللغة الإنكليزية – مستوى 1', hours:3, prereq:[], spec:['مشتركة']},
+  {code:'L2', name:'اللغة الإنكليزية – مستوى 2', hours:3, prereq:['L1'], spec:['مشتركة']},
+  {code:'L3', name:'اللغة الإنكليزية – مستوى 3', hours:3, prereq:['L2'], spec:['مشتركة']},
+  {code:'L4', name:'اللغة الإنكليزية – مستوى 4', hours:3, prereq:['L3'], spec:['مشتركة']},
+  {code:'L5', name:'اللغة الإنكليزية – مستوى 5', hours:3, prereq:['L4'], spec:['مشتركة']},
+
+  // مالية
+  {code:'BAC603', name:'محاسبة شركات الأشخاص', hours:5, prereq:['BAC402'], spec:['مالية']},
+  {code:'BFB503', name:'الإدارة المالية للشركات', hours:5, prereq:['BFB401'], spec:['مالية']},
+  {code:'BAC605', name:'محاسبة شركات الأموال', hours:5, prereq:['BAC603'], spec:['مالية']},
+  {code:'BFB604', name:'إدارة المؤسسات المالية', hours:5, prereq:['BFB401'], spec:['مالية']},
+  {code:'BFB605', name:'تحليل مالي', hours:6, prereq:['BFB401','L3'], spec:['مالية']},
+  {code:'BFB606', name:'مالية دولية (تمويل خارجي)', hours:6, prereq:['BEC403','BFB503','L3'], spec:['مالية']},
+  {code:'BFB607', name:'خدمات مصرفية', hours:6, prereq:['BFB401'], spec:['مالية']},
+  {code:'BFB608', name:'مالية إسلامية', hours:5, prereq:['BFB503'], spec:['مالية']},
+  {code:'BFB609', name:'إدارة الأسواق المالية', hours:6, prereq:['BFB605','BFB606'], spec:['مالية']},
+  {code:'BAC608', name:'محاسبة متوسطة 1', hours:5, prereq:['BAC605'], spec:['مالية']},
+  {code:'BAC609', name:'محاسبة متوسطة 2', hours:5, prereq:['BAC608'], spec:['مالية']},
+  {code:'BFB610', name:'إدارة المخاطر الائتمانية', hours:5, prereq:['BFB607'], spec:['مالية']},
+  {code:'PFB601', name:'مشروع التخرج (مالية)', hours:12, prereq:['BQM604','BFB605'], spec:['مالية']},
+
+  // موارد بشرية
+  {code:'BAC504', name:'محاسبة مالية للشركات', hours:5, prereq:['BAC402'], spec:['موارد بشرية','تسويق']},
+  {code:'BHR603', name:'علم النفس الإداري والصناعي', hours:5, prereq:['BHR401'], spec:['موارد بشرية']},
+  {code:'BHR604', name:'التدريب والتطوير', hours:5, prereq:['BHR401'], spec:['موارد بشرية']},
+  {code:'BHR605', name:'إدارة التوظيف', hours:5, prereq:['BHR401'], spec:['موارد بشرية']},
+  {code:'BHR606', name:'القيادة الإدارية', hours:5, prereq:['BHR401'], spec:['موارد بشرية']},
+  {code:'BHR607', name:'إدارة المسار المهني', hours:6, prereq:['BHR604','L3'], spec:['موارد بشرية']},
+  {code:'BHR608', name:'الإدارة الاستراتيجية للموارد البشرية', hours:6, prereq:['BHR606','BHR605','BMN606','L3'], spec:['موارد بشرية']},
+  {code:'BHR609', name:'إدارة المعرفة ورأس المال الفكري', hours:6, prereq:['BHR606','BHR604'], spec:['موارد بشرية']},
+  {code:'BHR610', name:'إدارة فرق العمل', hours:5, prereq:['BHR606'], spec:['موارد بشرية']},
+  {code:'BHR611', name:'إدارة التنوع', hours:6, prereq:['BHR608','BHR610'], spec:['موارد بشرية']},
+  {code:'BHR612', name:'اتجاهات حديثة في إدارة الموارد البشرية', hours:5, prereq:['BHR608'], spec:['موارد بشرية']},
+  {code:'PHR601', name:'مشروع التخرج (موارد بشرية)', hours:12, prereq:['BQM604','BHR608'], spec:['موارد بشرية']},
+
+  // تسويق
+  {code:'BMK603', name:'تسويق الخدمات', hours:5, prereq:['BMK502'], spec:['تسويق']},
+  {code:'BMK604', name:'إدارة المنتج والعلامة التجارية', hours:5, prereq:['BMK502'], spec:['تسويق']},
+  {code:'BMK605', name:'إدارة المبيعات', hours:5, prereq:['BMK502'], spec:['تسويق']},
+  {code:'BMK606', name:'التسعير والتوزيع', hours:5, prereq:['BMK502'], spec:['تسويق']},
+  {code:'BMK607', name:'الاتصالات المتكاملة', hours:6, prereq:['BMK502'], spec:['تسويق']},
+  {code:'BMK608', name:'التسويق الإلكتروني', hours:6, prereq:['BMN507','BMK607'], spec:['تسويق']},
+  {code:'BMK609', name:'إدارة العلاقات العامة', hours:5, prereq:['BMK607'], spec:['تسويق']},
+  {code:'BMK610', name:'التسويق الاستراتيجي', hours:5, prereq:['BMN606','BMK604','BMK606'], spec:['تسويق']},
+  {code:'BMK612', name:'التسويق الدولي', hours:6, prereq:['BMK604','BMK607','BMK606','BMK603'], spec:['تسويق']},
+  {code:'BMK611', name:'تسويق منظمات الأعمال', hours:6, prereq:['BMK604','BMK606','L3'], spec:['تسويق']},
+  {code:'PMK601', name:'مشروع التخرج (تسويق)', hours:12, prereq:['BQM604','BMK607'], spec:['تسويق']}
+];
+
+/* ======== مؤشرات ======== */
+const byCode = {}, dependents = {};
+COURSES.forEach(c => {
+  byCode[c.code] = c;
+  c.prereq.forEach(p => { (dependents[p] = dependents[p] || []).push(c.code); });
+});
+const SPECS = ['الكل', 'مشتركة', 'مالية', 'موارد بشرية', 'تسويق'];
+const state = { q: '', spec: 'الكل', hours: 0, pre: false };
+const $ = id => document.getElementById(id);
+
+/* تطبيع النص العربي للبحث (إ أ آ → ا ، ى → ي ، ة → ه ، بدون تشكيل) */
+function norm(s){
+  return String(s).toLowerCase()
+    .replace(/[\u064B-\u065F\u0670]/g,'')
+    .replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه');
+}
+function esc(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+/* كل المتطلبات السابقة (متسلسلة) */
+function allPrereqs(code, seen = new Set()){
+  (byCode[code]?.prereq || []).forEach(p => { if(!seen.has(p)){ seen.add(p); allPrereqs(p, seen); } });
+  return seen;
+}
+
+/* ---- شريط الاختصاصات ---- */
+function renderSpecs(){
+  $('specs').innerHTML = SPECS.map(s => {
+    const n = s === 'الكل' ? COURSES.length : COURSES.filter(c => c.spec.includes(s)).length;
+    return `<button class="chip" type="button" data-spec="${s}" aria-pressed="${state.spec===s}">${s}<span class="n">${n}</span></button>`;
+  }).join('');
+}
+
+/* ---- القائمة ---- */
+function filtered(){
+  const q = norm(state.q.trim());
+  return COURSES.filter(c =>
+    (state.spec === 'الكل' || c.spec.includes(state.spec)) &&
+    c.hours >= state.hours &&
+    (!state.pre || c.prereq.length > 0) &&
+    (!q || norm(c.code).includes(q) || norm(c.name).includes(q))
+  );
+}
+function renderList(){
+  const items = filtered();
+  $('count').textContent = `عرض ${items.length} من ${COURSES.length} مادة`;
+  $('reset').hidden = !(state.q || state.spec !== 'الكل' || state.hours || state.pre);
+  $('grid').innerHTML = items.length ? items.map(c => `
+    <button class="c-card" type="button" data-code="${c.code}">
+      <div class="c-top"><span class="code">${c.code}</span><span class="hours">${c.hours} ساعات</span></div>
+      <h3>${esc(c.name)}</h3>
+      <div class="c-meta">
+        ${c.prereq.length
+          ? `<span class="pre-label">المتطلبات:</span>` + c.prereq.map(p => `<span class="mini">${p}</span>`).join('')
+          : `<span class="pre-label">بدون متطلبات</span>`}
+      </div>
+      <div class="c-meta" style="padding-top:0">${c.spec.map(s => `<span class="tag">${s}</span>`).join('')}</div>
+    </button>`).join('')
+    : `<div class="empty">ما في مواد مطابقة. جرّب تغيّر البحث أو تعيد ضبط الفلاتر.</div>`;
+}
+
+/* ---- التعليقات (ودجت مشترك من الـ Hub) ---- */
+let commentsReady = false;
+function loadCommentsWidget(){
+  if(!HUB_URL) return;
+  const s = document.createElement('script');
+  s.src = HUB_URL.replace(/\/?$/, '/') + 'assets/comments.js';
+  s.onload = () => { commentsReady = !!window.SCComments; mountComments(); };
+  document.head.appendChild(s);
+}
+function mountComments(){
+  const code = stack[stack.length - 1];
+  if(commentsReady && code) SCComments.mount($('sh-comments'), { course_id: code, chapter_id: 'info', lazy: true });
+}
+
+/* ---- نافذة التفاصيل ---- */
+let stack = [];
+function linkBtn(code, soft){
+  const c = byCode[code];
+  return `<button class="link${soft ? ' soft' : ''}" type="button" data-open="${code}"><b>${code}</b>${c ? `<span>${esc(c.name)}</span>` : ''}</button>`;
+}
+function renderSheet(){
+  const code = stack[stack.length - 1];
+  const c = byCode[code];
+  if(!c) return;
+  const direct = c.prereq;
+  const chain = [...allPrereqs(code)].filter(p => !direct.includes(p));
+  const deps = dependents[code] || [];
+  $('sh-title').textContent = `${c.code} — ${c.name}`;
+  $('sh-back').hidden = stack.length < 2;
+  $('sh-facts').innerHTML = `<span class="fact h">${c.hours} ساعات</span>` + c.spec.map(s => `<span class="fact s">${s}</span>`).join('');
+  $('sh-body').innerHTML = `
+    <div class="sec"><h4>المتطلبات المباشرة</h4>${direct.length ? `<div class="links">${direct.map(p => linkBtn(p)).join('')}</div>` : `<div class="none">ما في، بتقدر تسجّلها مباشرة.</div>`}</div>
+    ${chain.length ? `<div class="sec"><h4>وخلفها (سلسلة المتطلبات السابقة)</h4><div class="links">${chain.map(p => linkBtn(p, true)).join('')}</div></div>` : ''}
+    <div class="sec"><h4>مواد بتفتحها هالمادة</h4>${deps.length ? `<div class="links">${deps.map(p => linkBtn(p)).join('')}</div>` : `<div class="none">ما في مواد بتعتمد عليها مباشرة.</div>`}</div>`;
+  $('sheet').scrollTop = 0;
+  mountComments();
+}
+function openCourse(code, push = true){
+  if(!byCode[code]) return;
+  if(push) stack.push(code); else stack = [code];
+  $('overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  try { history.replaceState(null, '', '#' + code); } catch(e){}
+  renderSheet();
+}
+function closeSheet(){
+  $('overlay').classList.remove('open');
+  document.body.style.overflow = '';
+  stack = [];
+  try { history.replaceState(null, '', location.pathname + location.search); } catch(e){}
+}
+function back(){
+  if(stack.length < 2) return;
+  stack.pop();
+  try { history.replaceState(null, '', '#' + stack[stack.length - 1]); } catch(e){}
+  renderSheet();
+}
+function copyLink(){
+  const url = location.origin + location.pathname + '#' + stack[stack.length - 1];
+  const done = () => { $('sh-share').textContent = 'تم النسخ ✓'; setTimeout(() => $('sh-share').textContent = 'نسخ رابط هالمادة', 1800); };
+  if(navigator.clipboard && window.isSecureContext){ navigator.clipboard.writeText(url).then(done, () => prompt('انسخ الرابط:', url)); }
+  else { prompt('انسخ الرابط:', url); }
+}
+
+/* ---- الأحداث ---- */
+$('specs').addEventListener('click', e => {
+  const b = e.target.closest('[data-spec]'); if(!b) return;
+  state.spec = b.dataset.spec; renderSpecs(); renderList();
+});
+$('q').addEventListener('input', e => {
+  state.q = e.target.value; $('search-box').classList.toggle('has-text', !!state.q); renderList();
+});
+$('q-clear').addEventListener('click', () => { $('q').value=''; state.q=''; $('search-box').classList.remove('has-text'); renderList(); $('q').focus(); });
+$('hours').addEventListener('change', e => { state.hours = Number(e.target.value); renderList(); });
+$('pre').addEventListener('click', e => { state.pre = !state.pre; e.currentTarget.setAttribute('aria-pressed', state.pre); renderList(); });
+$('reset').addEventListener('click', () => {
+  state.q=''; state.spec='الكل'; state.hours=0; state.pre=false;
+  $('q').value=''; $('search-box').classList.remove('has-text'); $('hours').value='0'; $('pre').setAttribute('aria-pressed','false');
+  renderSpecs(); renderList();
+});
+$('grid').addEventListener('click', e => { const c = e.target.closest('[data-code]'); if(c) openCourse(c.dataset.code, false); });
+$('sh-body').addEventListener('click', e => { const b = e.target.closest('[data-open]'); if(b) openCourse(b.dataset.open, true); });
+$('sh-close').addEventListener('click', closeSheet);
+$('sh-back').addEventListener('click', back);
+$('sh-share').addEventListener('click', copyLink);
+$('overlay').addEventListener('click', e => { if(e.target === $('overlay')) closeSheet(); });
+document.addEventListener('keydown', e => { if(e.key === 'Escape' && $('overlay').classList.contains('open')) closeSheet(); });
+window.addEventListener('hashchange', () => { const h = decodeURIComponent(location.hash.slice(1)); if(h && byCode[h]) openCourse(h, false); });
+
+/* ---- بداية ---- */
+if(HUB_URL){ const a = $('home-link'); a.href = HUB_URL; a.hidden = false; }
+renderSpecs(); renderList();
+loadCommentsWidget();
+const h0 = decodeURIComponent(location.hash.slice(1));
+if(h0 && byCode[h0]) openCourse(h0, false);
+</script>
+</body>
+</html>
